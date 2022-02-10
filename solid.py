@@ -1,7 +1,7 @@
 
-"""[In this ocasion, we apply Interface segregation]
-
-Its better to have many interfaces than only general one.
+"""[In this ocasion, we apply Interface segregation using composition]
+Composition is better in some cases instead of create a lot of subclasses.
+We dont need inheritance, instead separate behavior
 
 
 
@@ -28,6 +28,17 @@ class Order:
         return total
 
 
+class SMSAuth:
+    
+    authorized = False
+    
+    def verify_code(self,code):
+        print(f"Verify code {code}")
+        self.authorized=True
+    def is_authorized(self) -> bool:
+        return self.authorized
+        
+
 class PaymentProcessor(ABC):
     """[We create an abstract PaymentProcessor Class]
 
@@ -37,26 +48,19 @@ class PaymentProcessor(ABC):
         pass
 
     
-class PaymentProcessor_SMS(PaymentProcessor):
-    """[We create an abstract PaymentProcessor Class]
-
-    """
-    @abstractmethod
-    def auth_sms(self, code):
-        pass
 
 
-class DebitPaymentProcessor(PaymentProcessor_SMS):
-    def __init__(self, security_code) -> None:
+
+class DebitPaymentProcessor(PaymentProcessor):
+    def __init__(self, security_code,authorizer: SMSAuth) -> None:
+        self.authorizer = authorizer
         self.security_code = security_code
-        self.verified = False
+        
 
-    def auth_sms(self, code):
-        print("verify sms code", code)
-        self.verified = True
+
 
     def pay(self, order):
-        if(not self.verified):
+        if(not self.authorizer.is_authorized()):
             raise Exception("Not Authorized")
 
         print("Processing debit payment type")
@@ -75,13 +79,14 @@ class CreditPaymentProcessor(PaymentProcessor):
         order.status = "paid"
 
 
-class PaypalPaymentProcessor(PaymentProcessor_SMS):
-    def __init__(self, email_address) -> None:
+class PaypalPaymentProcessor(PaymentProcessor):
+    def __init__(self, email_address,authorizer: SMSAuth) -> None:
+        self.authorizer=authorizer
         self.email_address = email_address
-    def auth_sms(self, code):   
-        print("verify sms code", code)
-        self.verified = True
+    
     def pay(self, order):
+        if(not self.authorizer.is_authorized()):
+            raise Exception("Not Authorized")
         print("Processing paypal payment type")
         print(f"Verify email address", self.email_address)
         order.status = "paid"
@@ -103,5 +108,9 @@ order.add_item("SSD", 1, 150)
 order.add_item("USB Cable", 2, 5)
 
 print(order.total_price())
-processor = PaypalPaymentProcessor("gnm3000@gmail.com")
+
+authorizer = SMSAuth()
+
+processor = PaypalPaymentProcessor("gnm3000@gmail.com",authorizer=authorizer)
+authorizer.verify_code(232232)
 processor.pay(order)
