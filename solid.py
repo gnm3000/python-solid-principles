@@ -5,7 +5,7 @@ We want to depends of abstraction, and not in concrete subclasses
 here payment processes, are depending in specific authrizers.
 Create other abstract authorizer class that you pass to payment process 
 
-
+# NOW we are going to create another autorization method
 
 
     """
@@ -44,6 +44,14 @@ class SMSAuth(Authorizer):
     def is_authorized(self) -> bool:
         return self.authorized
         
+class NotARobot(Authorizer):
+    authorized = False
+    
+    def not_a_robot(self):
+        print(f" Are you a robot? Naa")
+        self.authorized=True
+    def is_authorized(self) -> bool:
+        return self.authorized
 
 class PaymentProcessor(ABC):
     """[We create an abstract PaymentProcessor Class]
@@ -115,8 +123,9 @@ order.add_item("USB Cable", 2, 5)
 
 print(order.total_price())
 
-authorizer = SMSAuth()
+authorizer = NotARobot()
 
 processor = PaypalPaymentProcessor("gnm3000@gmail.com",authorizer=authorizer)
-authorizer.verify_code(232232)
+authorizer.not_a_robot()
+# this works because we made sure that the authorizer is a tyoe of authorizer. 
 processor.pay(order)
