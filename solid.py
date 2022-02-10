@@ -1,7 +1,9 @@
 
-"""[In this ocasion, we apply Interface segregation using composition]
-Composition is better in some cases instead of create a lot of subclasses.
-We dont need inheritance, instead separate behavior
+"""[D Dependency Inversion]
+We want to depends of abstraction, and not in concrete subclasses
+
+here payment processes, are depending in specific authrizers.
+Create other abstract authorizer class that you pass to payment process 
 
 
 
@@ -27,8 +29,12 @@ class Order:
             total += self.quantities[i] * self.prices[i]
         return total
 
+class Authorizer(ABC):
+    @abstractmethod
+    def is_authorized(self) -> bool:
+        pass
 
-class SMSAuth:
+class SMSAuth(Authorizer):
     
     authorized = False
     
@@ -52,7 +58,7 @@ class PaymentProcessor(ABC):
 
 
 class DebitPaymentProcessor(PaymentProcessor):
-    def __init__(self, security_code,authorizer: SMSAuth) -> None:
+    def __init__(self, security_code,authorizer: Authorizer) -> None:
         self.authorizer = authorizer
         self.security_code = security_code
         
@@ -80,7 +86,7 @@ class CreditPaymentProcessor(PaymentProcessor):
 
 
 class PaypalPaymentProcessor(PaymentProcessor):
-    def __init__(self, email_address,authorizer: SMSAuth) -> None:
+    def __init__(self, email_address,authorizer: Authorizer) -> None:
         self.authorizer=authorizer
         self.email_address = email_address
     
