@@ -1,9 +1,20 @@
 
-"""[In this ocasion, we aply O - Open/Close]
-Be able to extend code with new functionality
-but close for modification, we shouldn't need to modify existing code
+"""[In this ocasion, we apply L Liskov substitution principle]
 
-The issue is if I need add bitcoin payment, i need to modify PaymentProcessor
+The Liskov Substitution Principle in practical software development. 
+The principle defines that objects of a superclass shall be replaceable
+with objects of its subclasses without breaking the application. 
+That requires the objects of your subclasses to behave in the same
+way as the objects of your superclass
+
+PaypalPaymentProcessor dont work with security_code but with emails
+Deberia ser un email address y no securitycode.
+El tema que en el abstractmethod es un security_code, y si uso un email en una clase hija
+estaria violancio el principio de Liskov
+
+La solucion es quitar el security_code de la funcion y ponerla en la __init__ function
+
+
     """
 from abc import ABC,abstractmethod
 
@@ -30,29 +41,37 @@ class PaymentProcessor(ABC):
 
     """
     @abstractmethod
-    def pay(self,order,security_code):
+    def pay(self,order):
         pass
     
 class DebitPaymentProcessor(PaymentProcessor):
-    def pay(self,order,security_code):
+    def __init__(self,security_code) -> None:
+        self.security_code=security_code
+    def pay(self,order):
         print("Processing debit payment type")
-        print(f"Verify security code", security_code)
+        print(f"Verify security code", self.security_code)
         order.status = "paid"
 class CreditPaymentProcessor(PaymentProcessor):
-    def pay(self,order,security_code):
+    def __init__(self,security_code) -> None:
+        self.security_code=security_code
+    def pay(self,order):
         print("Processing credit payment type")
-        print(f"Verify security code", security_code)
+        print(f"Verify security code", self.security_code)
         order.status = "paid"
 class PaypalPaymentProcessor(PaymentProcessor):
-    def pay(self,order,security_code):
+    def __init__(self,email_address) -> None:
+        self.email_address=email_address
+    def pay(self,order):
         print("Processing paypal payment type")
-        print(f"Verify security code", security_code)
+        print(f"Verify email address", self.email_address)
         order.status = "paid"
 
 class BitcoinPaymentProcessor(PaymentProcessor):
-    def pay(self,order,security_code):
+    def __init__(self,wallet) -> None:
+        self.wallet=wallet
+    def pay(self,order):
         print("Processing Bitcoin payment type")
-        print(f"Verify security code", security_code)
+        print(f"Verify Wallet", self.wallet)
         order.status = "paid"
 
 
@@ -65,5 +84,5 @@ order.add_item("SSD", 1, 150)
 order.add_item("USB Cable", 2, 5)
 
 print(order.total_price())
-processor = BitcoinPaymentProcessor()
-processor.pay(order, "999")
+processor = PaypalPaymentProcessor("gnm3000@gmail.com")
+processor.pay(order)
