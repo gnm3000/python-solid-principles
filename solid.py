@@ -36,12 +36,17 @@ class PaymentProcessor(ABC):
     def pay(self, order):
         pass
 
+    
+class PaymentProcessor_SMS(PaymentProcessor):
+    """[We create an abstract PaymentProcessor Class]
+
+    """
     @abstractmethod
-    def auth_sms(self, code)
-    pass
+    def auth_sms(self, code):
+        pass
 
 
-class DebitPaymentProcessor(PaymentProcessor):
+class DebitPaymentProcessor(PaymentProcessor_SMS):
     def __init__(self, security_code) -> None:
         self.security_code = security_code
         self.verified = False
@@ -63,10 +68,6 @@ class CreditPaymentProcessor(PaymentProcessor):
     
     def __init__(self, security_code) -> None:
         self.security_code = security_code
-
-    def auth_sms(self, code):
-        # this is a violation of Liskov
-        raise Exception("Credit card payment dont support SMS code auth")
     
     def pay(self, order):
         print("Processing credit payment type")
@@ -74,7 +75,7 @@ class CreditPaymentProcessor(PaymentProcessor):
         order.status = "paid"
 
 
-class PaypalPaymentProcessor(PaymentProcessor):
+class PaypalPaymentProcessor(PaymentProcessor_SMS):
     def __init__(self, email_address) -> None:
         self.email_address = email_address
     def auth_sms(self, code):   
@@ -89,9 +90,7 @@ class PaypalPaymentProcessor(PaymentProcessor):
 class BitcoinPaymentProcessor(PaymentProcessor):
     def __init__(self, wallet) -> None:
         self.wallet = wallet
-    def auth_sms(self, code):
-        # this is a violation of Liskov
-        raise Exception("Credit card payment dont support SMS code auth")
+    
     def pay(self, order):
         print("Processing Bitcoin payment type")
         print(f"Verify Wallet", self.wallet)
