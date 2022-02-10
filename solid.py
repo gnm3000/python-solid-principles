@@ -1,37 +1,46 @@
+
+"""[In this ocasion, we aply S - SOLID - Single responsability]
+
+    Returns:
+        [type]: [description]
+    """
+
+
 class Order:
     items = []
     quantities = []
-    prices=[]
+    prices = []
     status = "open"
-    
-    def add_item(self,name,quantity,price):
+
+    def add_item(self, name, quantity, price):
         self.items.append(name)
         self.quantities.append(quantity)
         self.prices.append(price)
-        
+
     def total_price(self):
         total = 0
         for i in range(len(self.prices)):
             total += self.quantities[i] * self.prices[i]
         return total
 
-    def pay(self,payment_type,security_code):
-        if( payment_type=="debit"):
-            print("Processing debit payment type")
-            print(f"Verify security code", security_code)
-            self.status="paid"
-        elif payment_type == "credit":
-            print("Processing credit payment type")
-            print(f"Verifying security code: {security_code} ")
-            self.status = "paid"
-            
-        else:
-            raise Exception("Unknown payment type: {payment_type}")
-            
+
+class PaymentProcessor:
+    def pay_debit(self, order, security_code):
+        print("Processing debit payment type")
+        print(f"Verify security code", security_code)
+        order.status = "paid"
+
+    def pay_credit(self, order, security_code):
+        print("Processing credit payment type")
+        print(f"Verifying security code: {security_code} ")
+        order.status = "paid"
+
+
 order = Order()
-order.add_item("keyboard",1,50)
-order.add_item("SSD",1,150)
-order.add_item("USB Cable",2,5)
+order.add_item("keyboard", 1, 50)
+order.add_item("SSD", 1, 150)
+order.add_item("USB Cable", 2, 5)
 
 print(order.total_price())
-order.pay("debit","9993")
+processor = PaymentProcessor()
+processor.pay_debit(order, "999")
