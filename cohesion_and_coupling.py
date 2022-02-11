@@ -13,6 +13,16 @@ If I change something in VehicleRegistry I will change Register_vechicle.
 import string
 import random
 
+class VehicleInfo:
+    bread: str
+    catalogue_price: str
+    electric: bool
+
+class Vehicle:
+    id: str
+    license_plate: str
+    info: VehicleInfo
+
 class VehicleRegistry:
     
     def generate_vehicle_id(self,length):
