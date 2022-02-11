@@ -39,7 +39,8 @@ class ElectricPowerSwitch:
             self.on = True
             
 l = LightBulb()
-switch = ElectricPowerSwitch(l)
+f=Fan()
+switch = ElectricPowerSwitch(f)
 switch.press()
 switch.press()
 
