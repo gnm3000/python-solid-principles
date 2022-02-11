@@ -1,22 +1,41 @@
-class LightBulb:
+from abc import ABC, abstractmethod
+
+class Switchable(ABC):
+    # abstract class
+    @abstractmethod
+    def turn_on(self):
+        pass
+    
+    @abstractmethod
+    def turn_off(self):
+        pass
+
+class LightBulb(Switchable):
     def turn_on(self):
         print("LightBulb: turned on...")
     
     def turn_off(self):
         print("LightBulb: turned off...")
+    
+class Fan(Switchable):
+    def turn_on(self):
+        print("Fan: turned on...")
+    
+    def turn_off(self):
+        print("Fan: turned off...")
         
 class ElectricPowerSwitch:
     
-    def __init__(self, l:LightBulb):
-        self.lightBulb = l
+    def __init__(self, l:Switchable):
+        self.client = l
         self.on = False
         
     def press(self):
         if self.on:
-            self.lightBulb.turn_off()
+            self.client.turn_off()
             self.on = False
         else:
-            self.lightBulb.turn_on()
+            self.client.turn_on()
             self.on = True
             
 l = LightBulb()
@@ -29,3 +48,5 @@ switch.press()
 # we are going to use dependency inversion to remove this dependency. 
 # to do this, we're gonna to use un abstract class. In a abstract class you can
 # specify what interface should be that a class should adhere. 
+
+# we remove the dependency between class. The param is the interface/abstract class, NOT the class itself.
