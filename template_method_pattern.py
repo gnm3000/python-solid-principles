@@ -34,14 +34,36 @@ from abc import ABC,abstractmethod
 from typing import List
 
 
-
-
-class TradingBot(ABC):
+class Exchange(ABC):
+    @abstractmethod
     def connect(self):
-        print(f"Connecting to Crypto exchange...")
-
+        pass
+    @abstractmethod
+    def get_market_data(self,coin:str) -> List[float]:
+        pass
+    
+class BinanceExchange(Exchange):
+    def connect(self):
+        print("connecting to binance...")
+    
     def get_market_data(self,coin:str) -> List[float]:
         return [10,12,18,14]
+
+class CoinbaseExchange(Exchange):
+    def connect(self):
+        print("connecting to coinbase...")
+    
+    def get_market_data(self,coin:str) -> List[float]:
+        return [192,203,240,280]
+  
+class TradingBot(ABC):
+    
+    def __init__(self,exchange: Exchange) -> None:
+        self.exchange = exchange # This is the BRIDGE!
+        # the connection between the tradingBot and Exchange.
+        # this connection happen in an abstract level. 
+        # now you can have different types of tradingBot and different
+        # types of exchanges. This is the idea with Bridge Pattern.
     
 
 
@@ -55,8 +77,8 @@ class TradingBot(ABC):
         pass
     
     def check_prices(self,coin:str):
-        self.connect()
-        prices = self.get_market_data(coin)
+        self.exchange.connect()
+        prices = self.exchange.get_market_data(coin)
         should_buy =  self.should_buy(prices)
         should_sell = self.should_sell(prices)
         if should_buy:
@@ -84,6 +106,6 @@ class MinMaxTrader(TradingBot):
         return prices[-1] == max(prices)
 
 
-application = AverageTrader()
+application = AverageTrader(CoinbaseExchange())
 application.check_prices("BTC/USD")
 
