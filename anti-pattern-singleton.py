@@ -17,3 +17,11 @@ print(logger1)
 print(logger2)
 logger1.log("Hi")
 logger2.log("Hello")
+
+"""
+This is an antipattern because:
+- Its hard to test
+- If you have subclasses from a singleton you will have multiple instances
+- Break OOP Principle Design
+- Can not fully control of creation
+"""
