@@ -13,40 +13,31 @@ But, the strategy process may be different.
 We will implement here the template method.
 """
 
+# now I can add More trading strategies without modify anything, only add classes.
+# check_prices now is complete independent from the process im going through. 
 
-
+from abc import ABC,abstractmethod
 from typing import List
 
-class Application:
-    
-    trading_strategy: str
-    
-    def __init__(self,trading_strategy="average") -> None:
-        self.trading_strategy = trading_strategy
-    
+
+class TradingBot(ABC):
     def connect(self):
         print(f"Connecting to Crypto exchange...")
 
     def get_market_data(self,coin:str) -> List[float]:
         return [10,12,18,14]
     
-    def list_average(self,list: List[float]) -> float:
-        return sum(list) / len(list) 
 
 
 
+    @abstractmethod
     def should_buy(self,prices: List[float]) -> bool:
-        if self.trading_strategy == "minmax":
-            return prices[-1] == min(prices)
-        else:
-            return prices[-1] < self.list_average(prices)
-
+        pass
+    
+    @abstractmethod
     def should_sell(self,prices: List[float]) -> bool:
-        if self.trading_strategy == "minmax":
-            return prices[-1] == max(prices)
-        else:
-            return prices[-1] > self.list_average(prices)
-
+        pass
+    
     def check_prices(self,coin:str):
         self.connect()
         prices = self.get_market_data(coin)
@@ -59,5 +50,24 @@ class Application:
         else:
             print(f"No action needed for {coin}")
 
-application = Application()
+class AverageTrader(TradingBot): 
+    def list_average(self,list: List[float]) -> float:
+        return sum(list) / len(list)
+    
+    def should_buy(self,prices: List[float]) -> bool:
+        return prices[-1] < self.list_average(prices)
+    
+    def should_sell(self,prices: List[float]) -> bool:
+        return prices[-1] > self.list_average(prices)
+
+class MinMaxTrader(TradingBot):
+    def should_buy(self,prices: List[float]) -> bool:
+        return prices[-1] == min(prices)
+    
+    def should_sell(self,prices: List[float]) -> bool:
+        return prices[-1] == max(prices)
+
+
+application = AverageTrader()
 application.check_prices("BTC/USD")
+
