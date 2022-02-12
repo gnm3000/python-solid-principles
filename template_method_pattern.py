@@ -16,8 +16,24 @@ We will implement here the template method.
 # now I can add More trading strategies without modify anything, only add classes.
 # check_prices now is complete independent from the process im going through. 
 
+##################### Bridge  pattern design
+
+"""
+The problem now is that currently in trading bot we have also methods for things that a tradingbot
+should not really do as connecting to an exchange or get data. 
+
+the thing bridge solve is, if you have two separated things that vary, different exchanges, different 
+trading bots. give you the capabilities  of adding an extra exchange or extra tradingbot, without
+to do anything other side of bridge.
+Bridge allow you to have two separated class hierarchies, two variations that can change independently
+from each other. 
+
+"""
+
 from abc import ABC,abstractmethod
 from typing import List
+
+
 
 
 class TradingBot(ABC):
