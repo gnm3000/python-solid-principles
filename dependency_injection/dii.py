@@ -1,5 +1,18 @@
 import string
 import random
+from abc import ABC, abstractmethod
+
+class Authorizer(ABC):
+    
+    @abstractmethod
+    def authorize(self):
+        pass
+    
+    @abstractmethod
+    def is_authorized(self) -> bool:
+        pass 
+
+
 
 class Order:
 
@@ -10,7 +23,7 @@ class Order:
     def set_status(self, status):
         self.status = status
 
-class Authorizer_SMS:
+class Authorizer_SMS(Authorizer):
 
     def __init__(self):
         self.authorized = False
@@ -26,9 +39,21 @@ class Authorizer_SMS:
     def is_authorized(self) -> bool:
         return self.authorized
 
+class Authorizer_Robot(Authorizer):
+    def __init__(self):
+        self.authorized = False
+    def authorize(self):
+        robot = ""
+        while robot!="y" and robot!="n":
+            robot = input("are you a robot? (y/n)").lower()
+        self.authorized = robot == "n"
+            
+    def is_authorized(self) -> bool:
+        return self.authorized
+
 class PaymentProcessor:
     
-    def __init__(self,authorizer: Authorizer_SMS) -> None:
+    def __init__(self,authorizer: Authorizer) -> None:
         self.authorizer = authorizer
     
     def pay(self, order):
