@@ -29,10 +29,11 @@ class Authorizer_SMS:
 class PaymentProcessor:
     
     def pay(self, order):
-        authorizer = Authorizer_SMS()
-        authorizer.generate_sms_code()
-        authorizer.authorize()
+        # pay function has many responsabilities
+        authorizer = Authorizer_SMS() # create object
+        authorizer.generate_sms_code() # generate code 
+        authorizer.authorize() # autorize
         if not authorizer.is_authorized():
             raise Exception("Not authorized")
         print(f"Processing payment for order with id {order.id}")
-        order.set_status("paid")
+        order.set_status("paid") # and dealing with payment itself
