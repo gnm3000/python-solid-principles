@@ -31,12 +31,31 @@ class Authorizer_SMS_TestCase(unittest.TestCase):
 
 class PaymentProcessor_TestCase(unittest.TestCase):
 
+    def test_init(self):
+        auth = Authorizer_SMS()
+        p = PaymentProcessor(authorizer=auth)
+        self.assertEqual(p.authorizer,auth)
+        
     def test_payment_success(self):
-        # ???
+        auth = Authorizer_SMS()
+        auth.generate_sms_code()
+        with patch("builtins.input",return_value=auth.code):
+            p = PaymentProcessor(auth)
+            order = Order()
+            p.pay(order)
+            self.assertEqual(order.status,"paid")
+        
+        
         self.assertTrue(True)
 
     def test_payment_fail(self):
-        # ???
+        auth = Authorizer_SMS()
+        auth.generate_sms_code()
+        with patch("builtins.input",return_value="12345"):
+            p = PaymentProcessor(auth)
+            order = Order()
+            self.assertRaises(Exception,p.pay,order)
+            
         self.assertTrue(True)
 
 

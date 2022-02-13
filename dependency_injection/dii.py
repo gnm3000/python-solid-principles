@@ -32,7 +32,7 @@ class PaymentProcessor:
         self.authorizer = authorizer
     
     def pay(self, order):
-        self.authorizer.generate_sms_code() # generate code 
+        
         self.authorizer.authorize() # autorize
         if not self.authorizer.is_authorized():
             raise Exception("Not authorized")

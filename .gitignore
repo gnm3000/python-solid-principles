@@ -1,2 +1,5 @@
+.coverage/
+.coverage
 env
 .pytest*
+__pycache__/
