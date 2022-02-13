@@ -1,16 +1,30 @@
 
 """
 Advanced employee Managament systems
+Two main problems:
+1) There are a lot of code duplication
+2) the classes has a lot responsabilities
+
+
 """
 
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
 
 @dataclass
-class HourlyEmployee:
-    """ Employee that's paid based on number of worked hours"""
-    
+class Employee(ABC):
+    """ basic representation of employee """
     name: str
     id: int
+    
+    @abstractmethod
+    def compute_pay(self) -> float:
+        """ compute how much should be paid"""
+
+@dataclass
+class HourlyEmployee(Employee):
+    """ Employee that's paid based on number of worked hours"""
+    
     comission: float = 100
     contracts_landed: float = 0
     pay_rate: float = 0
@@ -23,14 +37,14 @@ class HourlyEmployee:
             self.pay_rate * self.hours_worked + self.employer_cost 
             + self.comission*self.contracts_landed
         )
-    
+
+
+
+
 @dataclass
-class SalariedEmployee:
+class SalariedEmployee(Employee):
     """ employee that's paid based on a fixed monthly salary"""
-    name: str
-    id: int
-    comission: float = 100
-    contracts_landed: float = 0
+    
     monthly_salary: float = 0
     percentage: float = 1
     def compute_pay(self) -> float:
@@ -38,16 +52,24 @@ class SalariedEmployee:
         return (
             self.monthly_salary* self.percentage
             
-            + self.comission * self.contracts_landed
         )
-
 @dataclass
-class Freelancer:
-    """ freelancer basid on number of worked hours"""
-    name: str
-    id: int
+class SalariedEmployeeWithComission(SalariedEmployee):
+    """ employee that's paid based on a fixed monthly salary and get a comission"""
+    
     comission: float = 100
     contracts_landed: float = 0
+    def compute_pay(self) -> float:
+        """ compute how much should be paid"""
+        return (
+            super().compute_pay()+
+            
+            + self.comission * self.contracts_landed
+        )
+@dataclass
+class Freelancer(Employee):
+    """ freelancer basid on number of worked hours"""
+    
     pay_rate: float = 0
     hours_worked: int = 0
     vat_number: str = ""
@@ -55,9 +77,21 @@ class Freelancer:
     def compute_pay(self):
         """ """
         return (
-            self.pay_rate * self.hours_worked + self.comission*self.contracts_landed
+            self.pay_rate * self.hours_worked 
         )
-        
+ @dataclass
+class FreelancerWithComission(Freelancer):
+    """ freelancer basid on number of worked hours with comission """
+    
+    comission: float = 100
+    contracts_landed: float = 0
+    
+    
+    def compute_pay(self):
+        """ """
+        return (
+           super().compute_pay() + self.comission*self.contracts_landed
+        )       
 def main() -> None:
     """Main function."""
 
@@ -66,7 +100,7 @@ def main() -> None:
         f"{henry.name} worked for {henry.hours_worked} hours and earned ${henry.compute_pay()}."
     )
 
-    sarah = SalariedEmployee(
+    sarah = SalariedEmployeeWithComission(
         name="Sarah", id=47832, monthly_salary=5000, contracts_landed=10
     )
     print(
